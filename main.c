@@ -25,24 +25,34 @@ int main()
     }
 
 	/* tree traversals */
-	fprintf(stdout, "\nArborele contine urmatoarele noduri (valori): (inorder)\n");
+	puts("");
+	fprintf(stdout, "Arborele contine urmatoarele noduri (valori): (inorder)\n");
 	inOrder(r);
 
-	fprintf(stdout, "\nArborele contine urmatoarele noduri (valori): (preorder)\n");
+	puts("");
+	fprintf(stdout, "Arborele contine urmatoarele noduri (valori): (preorder)\n");
 	preOrder(r);
 
-	fprintf(stdout, "\nArborele contine urmatoarele noduri (valori): (postorder)\n");
+	puts("");
+	fprintf(stdout, "Arborele contine urmatoarele noduri (valori): (postorder)\n");
 	postOrder(r);
 
 	puts("");	/* newline, given the actual display style (I have no newline between the traversals */
+	fprintf(stdout, "The tree's height is (before deletion): %d\n", height(&r));
 
 	/* tree deletions (not all nodes) */
 	fprintf(stdout, "valoarea de sters "); scanf("%i", &val);
 	del_nod(&r,val);
 
- 	fprintf(stdout, "Dupa stergere urmatoarele noduri (valori): (inorder)\n");
+	fprintf(stdout, "valoarea de sters "); scanf("%i", &val);
+	del_nod(&r,val);
+
+ 	fprintf(stdout, "Dupa stergere am urmatoarele noduri (valori): (inorder)\n");
 	inOrder(r);
 
+	/* vlad: compute tree's height after deletion */
+	puts("");
+	fprintf(stdout, "The tree's height is (after deletion): %d\n", height(&r));
 
 	fflush(stdin);
 	return 0;

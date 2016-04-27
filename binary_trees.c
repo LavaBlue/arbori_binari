@@ -200,3 +200,16 @@ void postOrder(pNOD pRad)
 
 	return;
 }
+
+/* vlad: compute the height of a given node */
+int height(pNOD *pRoot)
+{
+	static int hL = 0, hR = 0;
+
+	if(*pRoot == NULL )
+		return 0;
+
+	/* vlad: use this: height = 1 + max{height(root.left), height(root.right)} */
+	return 1 + ( (hL = height( &(*pRoot)->leg_st ) > (hR = height( &(*pRoot)->leg_dr)) ) ? hL : hR);
+
+}
