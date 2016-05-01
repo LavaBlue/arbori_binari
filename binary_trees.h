@@ -14,7 +14,7 @@ typedef NOD *pNOD;		/* vlad: very similar with linked-lists */
 /* vlad: functions' prototypes */
 void ins_nod(pNOD*, int );
 bool del_nod(pNOD*, int );
-int height(pNOD *);
+int tree_height(pNOD*, int*, int*);
 
 void inOrder(pNOD);
 void preOrder(pNOD);

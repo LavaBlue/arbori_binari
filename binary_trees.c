@@ -8,6 +8,12 @@
 /* programul va primi ca parametru numarul pe care trebuie sa îl adauge.
  * vlad: Algoritmul seamana cu 'sortarea prin interclasare': gasesc pozitia (locul) potrivita
  * unde urmeaza sa fac inserarea si stochez nodul in acea pozitie.
+ * Surse bibliografice:
+ * - Niklaus Wirth - Algo + data structures = programs
+ * - http://software.ucv.ro/~cstoica/ISP/Lucrarea%209%20-%20arbori.pdf (!)
+ * - http://infoscience.3x.ro/c++/stergere_abc.htm
+ * - http://staff.cs.upt.ro/~chirila/teaching/upt/id21-aa/lectures/AA-ID-Cap08-2.pdf (!)
+ * - http://andrei.clubcisco.ro/cursuri/1sd/curs/curs06.pdf
  */
 void ins_nod(pNOD *pPrim, int val)
 { 
@@ -201,15 +207,14 @@ void postOrder(pNOD pRad)
 	return;
 }
 
-/* vlad: compute the height of a given node */
-int height(pNOD *pRoot)
+/* vlad: compute the height of a given node (if the input node is the root => compute the tree's height
+ * The height esentially depends upon >the order< the input keys are feeded into this program (!)
+ */
+int tree_height(pNOD *pRoot, int *pHL, int *pHR)
 {
-	static int hL = 0, hR = 0;
-
 	if(*pRoot == NULL )
 		return 0;
 
 	/* vlad: use this: height = 1 + max{height(root.left), height(root.right)} */
-	return 1 + ( (hL = height( &(*pRoot)->leg_st ) > (hR = height( &(*pRoot)->leg_dr)) ) ? hL : hR);
-
+	return 1 + ( (*pHL = tree_height( &(*pRoot)->leg_st, pHL, pHR ) > (*pHR = tree_height( &(*pRoot)->leg_dr, pHL, pHR)) ) ? *pHL : *pHR);
 }
