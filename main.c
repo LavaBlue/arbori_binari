@@ -10,6 +10,8 @@ int main()
 {
 	int i, n, val;
 	int left_height, right_height;
+	BOOL ret_delete;
+
 	pNOD r = NULL;		/* vlad: the root; 
 						 * At the very beginning time the tree is empty (!) 
 						 * I will assume it this way.
@@ -43,21 +45,48 @@ int main()
 	fprintf(stdout, "The tree's height is (before deletion): %d\n", tree_height(&r, &left_height, &right_height));
 	fprintf(stdout, "Left height: %i, right height: %i\n", left_height, right_height);
 
+	/* is it a balanced tree? */
+	puts("");
+	fprintf(stdout, "Is balanced? %s \n", isBalanced(&r, left_height, right_height)?"Yes":"No");
+
 	/* tree deletions (not all nodes) */
-	fprintf(stdout, "valoarea de sters "); scanf("%i", &val);
-	del_nod(&r,val);
+	for(i=1; i<n; i++)
+	{
+		puts("");
+		do
+		{
+			fprintf(stdout, "valoarea de sters "); scanf("%i", &val);
+			if( (ret_delete = del_nod(&r, val)) == FALSE ) fprintf(stdout, "Nod inexistent! Nu pot sterge...\n");
+		} while( ret_delete == FALSE );
+	
+	 	fprintf(stdout, "Dupa stergere (inorder):\n");
+		inOrder(r);
 
-	fprintf(stdout, "valoarea de sters "); scanf("%i", &val);
-	del_nod(&r,val);
+		/* vlad: compute tree's height after deletion */
+		puts("");
+		left_height = right_height = 0;
+		fprintf(stdout, "The tree's height is (after deletion): %d\n", tree_height(&r, &left_height, &right_height));
+		fprintf(stdout, "Left height: %i, right height: %i\n", left_height, right_height);
+	}
 
- 	fprintf(stdout, "Dupa stergere am urmatoarele noduri (valori): (inorder)\n");
+#if 0
+	puts("");
+	do
+	{
+		fprintf(stdout, "valoarea de sters "); scanf("%i", &val);
+		if( (ret_delete = del_nod(&r,val)) == FALSE ) fprintf(stdout, "Nod inexistent! Nu pot sterge...\n");
+	} while( ret_delete == FALSE );
+
+ 	fprintf(stdout, "Dupa stergere (inorder):\n");
 	inOrder(r);
 
-	/* vlad: compute tree's height after deletion */
+
+
+
+	/* is it a balanced tree? */
 	puts("");
-	left_height = right_height = 0;
-	fprintf(stdout, "The tree's height is (after deletion): %d\n", tree_height(&r, &left_height, &right_height));
-	fprintf(stdout, "Left height: %i, right height: %i\n", left_height, right_height);
+	fprintf(stdout, "Is balanced? %s \n", isBalanced(&r, left_height, right_height)?"Yes":"No");
+#endif
 
 	fflush(stdin);
 	return 0;

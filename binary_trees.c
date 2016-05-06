@@ -35,7 +35,7 @@ void ins_nod(pNOD *pPrim, int val)
 	if(*pPrim == NULL)
 	{ 
 		/* nu am mai introdus nimic pana acum => nodul creat va deveni radacina arborelui */
-  		*pPrim = nod1; 
+  		*pPrim = nod1;
 	} else {	/* Daca exista un nod radacina, inserarea în arbore se va face conform
 	 			 * algoritmului prezentat la curs.
 	 			 */
@@ -62,7 +62,7 @@ void ins_nod(pNOD *pPrim, int val)
 		    	nod3->leg_st = nod1;
 			else
 				/* se asaza în dreapta parintelui */
-		    	nod3->leg_dr = nod1; 
+		    	nod3->leg_dr = nod1;
 	}/* end else */
 
 	return;
@@ -77,13 +77,13 @@ void ins_nod(pNOD *pPrim, int val)
  * Principiul este de a inlocui nodul sters cu 'valoarea nodului celui mai din stanga, al subarborelui sau drept'. Adica nodul cel mai mic din subarborele drept.
  * Tot un arbore binar de cautare este si atunci cand inlocuiesc nodul de sters cu valoarea maxima din subarborele stang.
  */
-bool del_nod(pNOD *pPrim, int nr)
+BOOL del_nod(pNOD *pPrim, int nr)
 { 
-	pNOD tmp, tmp1, tmp2, min; 
+	/*BOOL del_root = FALSE;*/
+	pNOD tmp, tmp1, tmp2, min;
 
 	/* se porneste cautarea informatiei de sters din radacina */
 	assert(*pPrim != NULL);		/* vlad: nu incerc sa parcurg un arbore vid => eroare dc primesc NULL! 
-								 * if I ask for deletion of an unexistent node then this is an error! 
 								 */
 
 	tmp1 = *pPrim;		/* vlad: caut valoarea de sters; incep cu radacina */
@@ -91,64 +91,68 @@ bool del_nod(pNOD *pPrim, int nr)
 		tmp = tmp1;
 		if (tmp1->inf > nr) 
 			tmp1 = tmp1->leg_st;	/* vlad: avansez pe subarbore stang */
-		else 
-			tmp1 = tmp1->leg_dr;	/* vlad: avansez pe subarbore drept */
+		else	if (tmp1->inf < nr ) tmp1 = tmp1->leg_dr;	/* vlad: avansez pe subarbore drept */
+		/* vlad: valoarea este in nodul radacina */
 	} while(tmp1 && tmp1->inf != nr);
 	
+	assert(tmp != NULL);
 	if(tmp1 == NULL) return FALSE;	/* vlad: no such node in the tree! */
 
-	/* vlad: retin in tmp parintele nodului pe care urmeaza sa-l sterg */
 	if( (tmp1->leg_dr == NULL) && (tmp1->leg_st == NULL) )	/* vlad: nod frunza */
 	{
-		if(tmp->leg_dr == tmp1) tmp->leg_dr = NULL;
-		if(tmp->leg_st == tmp1) tmp->leg_st = NULL;
+		fprintf(stdout, "Nod frunza\n");
+		if(tmp->leg_dr == tmp1) tmp->leg_dr = tmp1->leg_dr;
+		if(tmp->leg_st == tmp1) tmp->leg_st = tmp1->leg_st;
 		free(tmp1);
-		return TRUE;
-	}
-
-	if ((tmp1->leg_dr) == NULL)		/* cazul I: nu am fiu dreapta (dar am stanga) NU se poate altfel, pt ca sunt in arbore binar (!) Asadar am cel mult 2 noduri: 1 sau 2 */
-	{
-  		tmp1->inf		= tmp1->leg_st->inf;		/* mutare inf din nodul din st, in nodul curent */
-  		tmp1->leg_st	= tmp1->leg_st->leg_st;		/* refacere legaturi */
-		fprintf(stdout, "Cazul 1: am eliberat stanga\n");
-  		free(tmp->leg_st);		/* vlad: eliberarea zonei de memorie */
-	} else 	if (tmp1->leg_st == NULL) 	/* cazul II: nu am fiu stânga (dar am dreapta) */
+	} else if( tmp1->leg_dr && tmp1->leg_st )		/* cazul III: amandoi fiii */
+		{	
+			/* mergem la copilul din dreapta: subarborele drept */
+			min = tmp1->leg_dr;	/* vlad: primul nod al subarborelui drept */
+			tmp2 = tmp1;	/* vlad: what if I don't enter the while below?
+							 * Well, this statement will be valid afterward. I can take */
+			/* cautam cel mai din stânga copil (din subarborele drept)
+			 * Cum ziceam mai sus, o varianta echivalenta este: maximul din subarborele stang. 
+			 * Se poate alege intre oricare din cele doua variante: structura de BST se pastreaza.
+			 */
+			while(min->leg_st)
 			{ 
-  				/* mutare inf din nodul din st, in nodul curent */
-				tmp1->inf		= tmp1->leg_dr->inf;
-				tmp1->leg_dr	= tmp1->leg_dr->leg_dr;
-				fprintf(stdout, "Cazul 2: am eliberat dreapta\n");
-				free(tmp->leg_dr);	/* vlad: eliberarea zonei de memorie */	
+				tmp2 = min;			/* vlad: retin tatal nodului celui mai din stanga */
+				min = min->leg_st;	/* vlad: nodul cel mai din stanga: nu are subarbore stang, are doar drept */
 			}
-
-	if( tmp1->leg_dr && tmp1->leg_st )		/* cazul III: amandoi fiii */
-	{	
-		/* mergem la copilul din dreapta: subarborele drept */
-		min = tmp1->leg_dr;
-		tmp2 = tmp1;	/* vlad: what if I don't enter the while below?
-						 * Well, this statement will be valid afterward. I can take */
-		/* cautam cel mai din stânga copil (din subarborele drept)
-		 * Cum ziceam mai sus, o varianta echivalenta este: maximul din subarborele stang. 
-		 * Se poate alege intre oricare din cele doua variante: structura de BST se pastreaza.
-		 */
-		while(min->leg_st != NULL)
-		{ 
-			tmp2 = min;			/* vlad: retin tatal nodului celui mai din stanga */
-			min = min->leg_st;	/* vlad: nodul cel mai din stanga: nu are subarbore stang, are doar drept */
-		};
-
-		assert(min != NULL);	/* vlad: min este parintele ultimului nod frunza; tmp2 este parintele lui min */
-
-		tmp1->inf	 = min->inf;	fprintf(stdout, "Noua informatie a nodului: %i\n", tmp1->inf);
-		tmp2->leg_dr = NULL;	/* vlad: this is the most important note here! 
-								 * I don't alter the left subtree (which I preserve). Since I've followed the right
-								 * subtree, the left one should not be touched. 
-								 * I will only alter the right one - and it disappears, here.
-								 */
-		fprintf(stdout, "Cazul 3: am eliberat nodul cerut \n");
-		free(min);		/* vlad: eliberarea zonei de memorie */
-	}	/* end: cazul III */
-
+	
+			assert(min != NULL);	/* vlad: min este parintele ultimului nod frunza; tmp2 este parintele lui min */
+	
+			tmp1->inf = min->inf;	fprintf(stdout, "Noua informatie a nodului: %i\n", tmp1->inf);
+			tmp2->leg_dr = min->leg_dr;	/* vlad: this is the most important note here! 
+									 * I don't alter the left subtree (which I preserve). Since I've followed the right
+									 * subtree, the left one should not be touched. 
+									 * I will only alter the right one - and it disappears, here.
+									 */
+			fprintf(stdout, "Cazul 3: ambii fii -> am eliberat nodul cerut \n");
+			free(min);		/* vlad: eliberarea zonei de memorie */
+		}	/* end: cazul III */
+	
+		else if ( tmp1->leg_st )		/* cazul I: am doar fiu stanga */
+		{
+			pNOD fiu = NULL;
+	
+			fiu = tmp1->leg_st;
+	  		tmp1->inf		= fiu->inf;			/* mutare inf din nodul din st, in nodul curent */
+	  		tmp1->leg_st	= fiu->leg_st;		/* refacere legaturi */
+	
+			fprintf(stdout, "Cazul 1: doar fiu stanga -> am eliberat nodul cerut\n");
+	  		free(fiu);		/* vlad: eliberarea zonei de memorie */
+		} else 	/* cazul II: am doar fiu dreapta */
+				{
+					pNOD fiu = NULL;
+	
+					fiu = tmp1->leg_dr;
+	  				/* mutare inf din nodul din st, in nodul curent */
+					tmp1->inf		= fiu->inf;
+					tmp1->leg_dr	= fiu->leg_dr;
+					fprintf(stdout, "Cazul 2: doar fiu dreapta -> am eliberat nodul cerut\n");
+					free(fiu);	/* vlad: eliberarea zonei de memorie */
+				}
 	return TRUE;
 }
 
@@ -213,8 +217,16 @@ void postOrder(pNOD pRad)
 int tree_height(pNOD *pRoot, int *pHL, int *pHR)
 {
 	if(*pRoot == NULL )
-		return 0;
+		return 0;	/* vlad: convention says that, for a void tree, its height is -1 (in fact, non-existent) */
 
-	/* vlad: use this: height = 1 + max{height(root.left), height(root.right)} */
+	/* vlad: the computational relation is: height = 1 + max{height(root.left), height(root.right)} */
 	return 1 + ( (*pHL = tree_height( &(*pRoot)->leg_st, pHL, pHR ) > (*pHR = tree_height( &(*pRoot)->leg_dr, pHL, pHR)) ) ? *pHL : *pHR);
+}
+
+BOOL isBalanced(pNOD *pRoot, int HL, int HR)
+{
+	return 
+		(	abs(HL-HR) <= 1 &&
+       		isBalanced(&(*pRoot)->leg_st, HL, HR) &&
+       		isBalanced(&(*pRoot)->leg_dr, HL, HR));
 }

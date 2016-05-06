@@ -2,7 +2,7 @@
 #define __BINARY_TREES_
 
 /* vlad: data types */
-typedef enum {FALSE, TRUE} bool;
+typedef enum {FALSE, TRUE} BOOL;
 
 typedef struct Nod	
 {
@@ -12,9 +12,10 @@ typedef struct Nod
 typedef NOD *pNOD;		/* vlad: very similar with linked-lists */
 
 /* vlad: functions' prototypes */
-void ins_nod(pNOD*, int );
-bool del_nod(pNOD*, int );
-int tree_height(pNOD*, int*, int*);
+void ins_nod(pNOD*, int);
+BOOL del_nod(pNOD*, int);
+int tree_height( pNOD*, int*, int*);
+BOOL isBalanced( pNOD*, int, int);
 
 void inOrder(pNOD);
 void preOrder(pNOD);
