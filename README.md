@@ -1,4 +1,4 @@
-# arbori_binari
+# binary_search_trees (arbori_binari_de_cautare)
 SDA__BinarySearchTrees_API_proposal
 
 Basically this is a proposal of a BST API.
